@@ -1,0 +1,34 @@
+# This file is used by GitHub Actions to determine which jobs should be triggered based on the section "on".
+# For more information have a look at https://docs.github.com/en/actions/configuring-and-managing-workflows/configuring-a-workflow
+# This GitHub Action (workflow) was created by cyberjumper for Cambermast LLC via Fiverr:
+# https://www.fiverr.com/cyberjumper
+
+# The following section describes when the workflow should be triggered.
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron:  '0 11 * * *' # trigger workflow automatically at 4 am Pacific time (11 am UTC)
+  workflow_dispatch: # trigger workflow manually
+name: Generate website with Jekyll and push
+
+# The following section describes the steps of the workflow
+jobs:
+  build:
+    name: generate with jekyll and push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master # first step
+      # Action to get the code from branch master
+        with:
+          ref: master # checkout master branch (can be changed)
+      - uses: ./ # second step
+      # Action to run the Dockerfile (docker build and docker run)
+        env:
+          # Name of repository where the generated files should be pushed (will use branch gh-pages)
+          USER_SITE_REPOSITORY: Cambermast/cambermast-website
+          # Custom domain name - will be used to generate the CNAME file
+          # CNAME: www.cambermast.com //removing to test a non-Cambermast site.
+          # Name of the secret, which should contain a personal access token with scope "repo"
+          GITHUB_TOKEN: ${{ secrets.JEKYLL_PAT }}
